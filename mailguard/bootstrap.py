@@ -104,7 +104,9 @@ def install_runtime(args, *, source, requirements, skill=None):
             'model_api': {'required': args.mode == 'service', 'selected': args.provider,
                           'configured': doctor['providers_configured'], 'verified': False},
             'commands': commands,
-            'next': '配置值仅在本机.env填写；确认填写后check-imap只验证连接；用三封模拟邮件完成宿主新研判验收。'}
+            'next': ('配置值仅在本机.env填写；确认填写后check-imap只验证连接；用三封模拟邮件完成宿主新研判验收。'
+                     if args.mode == 'skill' else
+                     '在本机.env填写模型配置后，使用commands.start启动服务并用模拟邮件验证HTTP研判；IMAP填好后单独执行commands.check_imap。')}
 
 
 def skill_main(skill, argv=None):

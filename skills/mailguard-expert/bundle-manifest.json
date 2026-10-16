@@ -20,7 +20,7 @@
     "scripts/_runtime/mailguard/_assets/skills/mail-prompt-injection/SKILL.md": "11768c44309884e703c1708b1deabb91325def062d749ab523b1a18a05a09a6c",
     "scripts/_runtime/mailguard/_assets/skills/mail-remote-extortion/SKILL.md": "4df0014d9f8ec371b41dbbe11b58512c7cb57daa1c3a2dad1af1584f4b04511f",
     "scripts/_runtime/mailguard/_assets/skills/mail-triage-core/SKILL.md": "aa41902774ee9d80981114389e67f3682d766e84b6333f59b29230c1d13e9f49",
-    "scripts/_runtime/mailguard/bootstrap.py": "5572c946baee7770b425c30f552b332d9025809bbbcbc4f99113a73ed436ce9a",
+    "scripts/_runtime/mailguard/bootstrap.py": "c629795b9e57e3b164fa6bf706de08b2eb42609203484cddb1f43b5b26b287cb",
     "scripts/_runtime/mailguard/config.py": "8243429d34a969fbc7239108dc1a4f94a2b9616b8789bb900fe0939c15976bd0",
     "scripts/_runtime/mailguard/contracts.py": "4ed55e533e5fed536e6637c35bcd41c01ba04d91e75f4424702ec541318224f6",
     "scripts/_runtime/mailguard/evidence.py": "b1789cb60b174ef3720c1998948b44f59ea5e08ab8196ece54771f387bac2109",
