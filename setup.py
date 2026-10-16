@@ -17,9 +17,9 @@ class Build(build_py):
         dest = Path(self.build_lib) / 'mailguard/_assets'
         if dest.exists():
             shutil.rmtree(dest)
-        files = [(f'skills/{name}/SKILL.md', f'skills/{name}/SKILL.md') for name in POLICIES]
+        files = [(f'policies/detection/{name}/SKILL.md', f'skills/{name}/SKILL.md') for name in POLICIES]
         files += [('policies/expert-guidance.txt', 'guidance.txt')]
-        files += [(f'data/testbench/{name}.eml', f'samples/{name}.eml') for name in ('m002', 'm026')]
+        files += [(f'data/testbench/{name}.eml', f'samples/{name}.eml') for name in ('m002', 'm026', 'm031')]
         for source, target in files:
             path = dest / target
             path.parent.mkdir(parents=True, exist_ok=True)

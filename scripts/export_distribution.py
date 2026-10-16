@@ -8,10 +8,11 @@ import zipfile
 ROOT = Path(__file__).resolve().parent.parent
 ROOT_FILES = ('README.md', 'AGENTS.md', 'INSTALL.md', 'PUBLISH.md', 'CONTEXT.md', 'GLOSSARY.md',
               '.gitignore', '.gitattributes', '.streamlit/config.toml', '.env.example', 'pyproject.toml', 'setup.py', 'MANIFEST.in',
-              'requirements.txt', 'requirements.lock.txt', 'app.py', '启动邮件研判.command')
+              'requirements.txt', 'requirements.lock.txt', 'requirements-core.txt', 'app.py', '启动邮件研判.command')
 PUBLIC_SCRIPTS = ('audit_public_overlap.py', 'build_testbench.py', 'expand_testbench.py',
                   'prepare_form_controls.py', 'prepare_html_corpus.py', 'prepare_html_holdout.py',
-                  'restore_public_corpus.py', 'install.py', 'export_distribution.py')
+                  'restore_public_corpus.py', 'install.py', 'export_distribution.py',
+                  'build_skill_bundle.py', 'skill_entry.py')
 
 
 def distribution_files(root=ROOT):
@@ -23,12 +24,14 @@ def distribution_files(root=ROOT):
     files.update((root/'tests').glob('*.py'))
     files.add(root/'tests/fixtures/contract-request-hashes.json')
     files.update(root/'scripts'/name for name in PUBLIC_SCRIPTS)
-    for skill in (root/'skills').iterdir():
-        if skill.is_dir():
-            files.add(skill/'SKILL.md')
-    for folder, pattern in [('scripts', '*.py'), ('references', '*.md')]:
-        files.update((root/'skills/mailguard-expert'/folder).glob(pattern))
-    files.add(root/'skills/mailguard-expert/.gitignore')
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('mailguard_bundle_export', root/'scripts/build_skill_bundle.py')
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    manifest = builder.build(root, check=True)
+    files.update(root/'skills/mailguard-expert'/name for name in manifest['files'])
+    files.add(root/'skills/mailguard-expert/bundle-manifest.json')
+    files.update(root/f'policies/detection/{name}/SKILL.md' for name in builder.POLICIES)
     # Entire corpus is synthetic and owned by this project. No replay responses ship.
     files.update(root/'data/testbench'/f'm{i:03}.eml' for i in range(1, 101))
     files.update(root/'data/testbench'/name for name in

@@ -1,0 +1,4 @@
+imap-tools>=1.7,<2
+pydantic>=2.8,<3
+python-dotenv>=1,<2
+tzdata>=2024.1; sys_platform == 'win32'

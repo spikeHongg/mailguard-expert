@@ -7,6 +7,7 @@ import sqlite3
 import os
 
 from .models import AnalysisError
+from .failures import failure
 
 
 def emit(value):
@@ -21,7 +22,7 @@ def main(argv=None):
     early, _ = preflight.parse_known_args(argv)
     if early.env_file:
         if not early.env_file.is_file():
-            emit({'status': 'error', 'error_code': 'invalid_config', 'error': '指定配置文件不存在。'})
+            emit(failure('invalid_config', '指定配置文件不存在。'))
             return 1
         os.environ['MAILGUARD_ENV_FILE'] = str(early.env_file.expanduser().resolve())
         from dotenv import load_dotenv
@@ -33,6 +34,7 @@ def main(argv=None):
     commands = parser.add_subparsers(dest='command', required=True)
     commands.add_parser('doctor', help='离线安装自检；不调用模型或IMAP')
     commands.add_parser('samples', help='列出内置无害邮件')
+    commands.add_parser('check-imap', help='验证TLS、认证和只读文件夹；不获取邮件正文')
     prepare = commands.add_parser('prepare', help='提取静态事实并准备宿主研判请求')
     source = prepare.add_mutually_exclusive_group(required=True)
     source.add_argument('--sample', choices=SAMPLES)
@@ -59,8 +61,43 @@ def main(argv=None):
     imap.add_argument('--context', type=Path)
     service = commands.add_parser('serve', help='在127.0.0.1启动独立HTTP服务')
     service.add_argument('--port', type=int, default=8765)
+    status = commands.add_parser('service-status', help='检查本机服务健康和当前状态目录的鉴权')
+    status.add_argument('--port', type=int, default=8765)
     args = parser.parse_args(argv)
     try:
+        if args.command == 'check-imap':
+            from .imap_source import check_connection
+            emit(check_connection())
+            return 0
+        if args.command == 'service-status':
+            from .expert import state_directory
+            from http.client import HTTPConnection
+            if not 1 <= args.port <= 65535:
+                raise AnalysisError('端口须为1至65535。', code='invalid_config')
+            state = Path(args.state_dir or state_directory())
+            token_file = state/'service.token'
+            if not token_file.is_file():
+                raise AnalysisError('本机服务尚未启动。', code='service_not_started')
+            connection = HTTPConnection('127.0.0.1', args.port, timeout=5)
+            try:
+                # Connect directly to loopback; never forward the local token
+                # through a proxy or follow a redirect to another endpoint.
+                connection.request('GET', '/v1/capabilities',
+                                   headers={'Authorization': 'Bearer '+token_file.read_text().strip()})
+                response = connection.getresponse()
+                body = response.read(65537)
+                if response.status != 200 or len(body) > 65536:
+                    raise ValueError()
+                health = json.loads(body)
+                if not isinstance(health, dict) or health.get('status') != 'ok':
+                    raise ValueError()
+            except Exception:
+                raise AnalysisError('本机服务不可达或当前实例鉴权失败。', code='service_unreachable') from None
+            finally:
+                connection.close()
+            emit({'status': 'ok', 'running': True, 'authenticated': True,
+                  'providers_configured': health.get('providers_configured', {})})
+            return 0
         expert = Expert(args.state_dir)
         context = json.loads(args.context.read_text(encoding='utf-8')) if getattr(args, 'context', None) else {}
         if not isinstance(context, dict):
@@ -103,22 +140,28 @@ def main(argv=None):
         elif args.command == 'serve':
             if not 1 <= args.port <= 65535:
                 raise AnalysisError('端口须为1至65535。', code='invalid_config')
-            from .service import serve
+            try:
+                from .service import serve
+            except ImportError:
+                raise AnalysisError('请安装service模式依赖后启动独立服务。', code='service_not_installed') from None
             serve(expert.state, args.port)
             return 0
         emit(value)
+        if (value.get('result') or {}).get('error_code') == 'operation_cancelled':
+            return 130
         return 1 if value.get('status') == 'error' else 0
+    except KeyboardInterrupt:
+        emit(failure('operation_cancelled', '用户已中止当前操作。'))
+        return 130
     except PermissionError:
-        emit({'status': 'error', 'error_code': 'file_access_denied',
-              'error': '宿主拒绝文件操作；请检查本机目录权限并保留沙箱设置。未产生有效研判。'})
+        emit(failure('file_access_denied', '宿主拒绝文件操作；请检查本机目录权限并保留沙箱设置。未产生有效研判。'))
         return 1
     except (OSError, sqlite3.Error):
-        emit({'status': 'error', 'error_code': 'filesystem_error',
-              'error': '本机文件或私有状态库无法读写。请检查目录、磁盘与权限；未产生有效研判。'})
+        emit(failure('filesystem_error', '本机文件或私有状态库无法读写。请检查目录、磁盘与权限；未产生有效研判。'))
         return 1
     except (AnalysisError, ValueError) as exc:
-        emit({'status': 'error', 'error_code': getattr(exc, 'code', 'input_error'),
-              'error': str(exc) if isinstance(exc, AnalysisError) else '输入文件无法读取或格式无效。'})
+        emit(failure(getattr(exc, 'code', 'input_error'),
+                     str(exc) if isinstance(exc, AnalysisError) else '输入文件无法读取或格式无效。'))
         return 1
 
 

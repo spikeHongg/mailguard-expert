@@ -4,11 +4,9 @@
 
 ## 启动和配置
 
-按根目录INSTALL安装，填好本机 `.env`。启动：
+按根目录INSTALL选择service模式和IMAP初始配置。安装器返回 `env_file`、`commands.start/status/stop`，用户在本机填写配置后，使用返回的完整启动命令。新装默认配置为工作区 `.mailguard/.env`，状态为 `.mailguard/state/`。
 
-```sh
-.venv/bin/python -m mailguard.expert_cli serve --port 8765
-```
+`check-imap`（安装器的 `commands.check_imap`）只验证TLS、认证和只读文件夹，返回获取邮件数0；`doctor`仅为离线自检。模型API需用模拟邮件实际调用后才标记已验证。
 
 固定监听 `127.0.0.1`，单进程，无访问日志。`/health`公开且不返回邮箱、配置或路径；其他接口需 `Authorization: Bearer TOKEN`，令牌来自本机私有状态目录的 `service.token`。首次启动自动生成，不向终端打印。此入口供本机应用调用；远程部署所需的TLS、网络入口和多进程调度不属于当前服务契约。
 
@@ -21,7 +19,7 @@ DeepSeek/GLM并发从.env读取，默认20/5，上限20；本服务进程内合�
 |`GET /health`|无|服务存活；不代表上游模型可用|
 |`GET /v1/capabilities`|Bearer|离线能力、配置是否填写、模型并发|
 |`GET /v1/openapi.json`|Bearer|完整机器可读接口schema|
-|`POST /v1/prepare`|`sample`或`eml_base64`二选一；可选`context`、`profile`|id、request_hash、完整请求；status=prepared|
+|`POST /v1/prepare`|`sample`（m002/m026/m031）或`eml_base64`二选一；可选`context`、`profile`|id、request_hash、完整请求；status=prepared|
 |`POST /v1/jobs/{id}/submit`|request_hash、response；可选host、model|宿主输出经过证据校验的结果|
 |`POST /v1/jobs/{id}/analyze`|provider=deepseek/glm/gpt|调用配置API并保存真实结果；同步等待|
 |`GET /v1/jobs/{id}`|Bearer|任务状态、结果、失败记录数和人工复核|
@@ -42,7 +40,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 base = 'http://127.0.0.1:8765'
-token = Path('data/private/expert/service.token').read_text().strip()
+token = Path('.mailguard/state/service.token').read_text().strip()
 
 def call(path, data=None):
     request = Request(base+path,

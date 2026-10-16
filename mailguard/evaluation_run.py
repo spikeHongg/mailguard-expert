@@ -7,11 +7,12 @@ from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, field
 from datetime import datetime
-import fcntl
+import errno
 import json
 import os
 from pathlib import Path
 import re
+import sys
 from threading import Event
 import tempfile
 import time
@@ -24,6 +25,22 @@ from .models import AnalysisError
 from .progress import ProgressDeadline
 
 _RUN_DIRECTORIES = {'cases', 'requests', 'orphaned'}
+
+
+def _run_lock(stream, *, release=False):
+    """Lock the same run across processes using the platform's native file lock."""
+    if sys.platform == 'win32':
+        import msvcrt
+        stream.seek(0)
+        try:
+            msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK if release else msvcrt.LK_NBLCK, 1)
+        except OSError as exc:
+            if not release and exc.errno in (errno.EACCES, errno.EAGAIN, errno.EDEADLK):
+                raise BlockingIOError('run directory locked') from None
+            raise
+    else:
+        import fcntl
+        fcntl.flock(stream, fcntl.LOCK_UN if release else fcntl.LOCK_EX | fcntl.LOCK_NB)
 
 
 def timestamp():
@@ -132,6 +149,7 @@ class EvaluationRun(AbstractContextManager):
         self.records = {}
         self.complete_report = None
         self._lock = None
+        self._lock_acquired = False
         self._entered = False
         self._outcome = None
         self._legacy_manifest = legacy_manifest
@@ -140,9 +158,10 @@ class EvaluationRun(AbstractContextManager):
         try:
             if self.folder is not None:
                 self.folder.mkdir(parents=True, exist_ok=True)
-                self._lock = (self.folder/'.run.lock').open('a')
+                self._lock = (self.folder/'.run.lock').open('a+b')
                 try:
-                    fcntl.flock(self._lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    _run_lock(self._lock)
+                    self._lock_acquired = True
                 except BlockingIOError:
                     raise AnalysisError('同一运行目录正在使用，请稍后续跑。', code='run_busy') from None
                 manifest_path = self.folder/'manifest.json'
@@ -189,9 +208,13 @@ class EvaluationRun(AbstractContextManager):
 
     def __exit__(self, *exc):
         if self._lock is not None:
-            fcntl.flock(self._lock, fcntl.LOCK_UN)
-            self._lock.close()
-            self._lock = None
+            try:
+                if self._lock_acquired:
+                    _run_lock(self._lock, release=True)
+            finally:
+                self._lock.close()
+                self._lock = None
+                self._lock_acquired = False
         self._entered = False
 
     @staticmethod

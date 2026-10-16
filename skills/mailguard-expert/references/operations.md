@@ -1,53 +1,51 @@
-# 安装、运行与故障SOP
+# 运行与故障SOP
 
-## 安装
+安装、IMAP初始配置、升级及模式切换先读 [安装SOP](installation.md)。以下命令均接在主SKILL指定的脚本与 `--workspace` 后。
 
-取得用户提供的GitHub仓库，克隆到用户工作区，先阅读根目录 `AGENTS.md` 和 `INSTALL.md`。在仓库根目录执行：
+## 复核与状态
 
-```sh
-python3.12 scripts/install.py --workspace "WorkBuddy工作区绝对路径"
-```
+- `get --job ID`：读取已保存状态和结果。
+- `review --job ID --verdict risk|clear|review --note "说明"`：只有用户提供实际复核意见时才追加人工记录。AI研发意见保持其真实来源。
+- `doctor`：离线资源、解析、证据契约和存储检查；不连接API或IMAP。
+- `check-imap`：用户确认配置后，只验证TLS、登录和只读文件夹，邮件获取数为0。
+- `fetch-imap --limit 3`：用户明确请求后读取，随后仍由宿主研判与submit。
 
-安装器创建/复用仓库 `.venv`，安装Python依赖，复制完整Skill到工作区 `.codebuddy/skills/mailguard-expert/`，生成本机 `runtime.json` 并自检。默认项目级安装；用户明确需要所有项目可用时使用 `--scope user`。保留仓库，安装后的入口仍需要这个Python运行环境。
+配置及邮件保存在工作区 `.mailguard/` 或显式指定的旧配置/状态目录；其中值只用于本机程序。Skill更新不搬动这些数据。
 
-已有 `.env` 和私有数据保留；安装器管理的文件升级可加 `--update`。若仅通过 `npx skills add` 获得本Skill，仍需按以上流程安装仓库后端。不要把SKILL.md安装成功当作完整安装完成。
+## 独立服务
 
-## 密钥与模式
+服务模式安装后使用安装器返回的启动和状态命令；终端Ctrl+C停止。HTTP固定监听127.0.0.1，Bearer令牌在私有状态目录 `service.token`，不打印到终端。命令行参数只传配置文件路径。
 
-默认宿主研判无需API Key。独立API在仓库 `.env` 中填写 `DEEPSEEK_API_KEY` 或 `GLM_API_KEY`，不把密钥写进聊天、命令参数或Skill。通过离线doctor只能判断是否已填写，真实可用性要用模拟邮件单独验证。
+服务侧保留 `prepare / analyze --provider deepseek|glm / get / review`，通过配置的模型API研判。HTTP契约见源码 `docs/local-api.md`。Skill入口自身只提供宿主研判；需要API时按安装SOP增加service模式。
 
-已准备任务，独立API分析：
+默认DeepSeek20、GLM5并发，单进程上限20；修改.env后重启。每封任务连续5分钟无完成结果会失败，批量评测沿用整批连续5分钟无新终态的规则。
 
-```sh
-python3 scripts/mailguard.py analyze --job "ID" --provider deepseek
-```
+## 错误处理
 
-启动独立HTTP服务：
+命令失败时读取 `error_code` 和 `recovery.next_steps`。停止当前失败步骤，保留已完成的结果，不继续执行依赖它的步骤。`retryable=true` 表示问题解决后可以重试，不是无限自动重试授权。API内部有限重试耗尽后，由宿主向用户说明。
 
-```sh
-python3 scripts/mailguard.py serve --port 8765
-```
+向用户依次汇报：**已完成什么 → 哪一步失败/尚未验证 → 最小修复动作 → 修复后运行什么 → 现在仍能用什么**。附任务ID或安装命令；不附密码、令牌、完整.env或真实邮件正文。模式/IMAP暂未配置时可继续模拟邮件和.eml；模型API未配置时独立服务只报告待配置。
 
-服务只监听 `127.0.0.1`，Bearer令牌位于状态目录 `service.token`，不在终端打印。HTTP契约见仓库 `docs/local-api.md`；Key仅由后端读取。当前默认DeepSeek20、GLM5并发，修改.env相应 `*_CONCURRENCY` 后重启。单进程服务限制所有HTTP分析请求的合计并发，满额返回429，任务保持待执行。
+配置错误、鉴权失败和权限拒绝不自动重试。网络或限流恢复后只重试未完成任务；成功结果不覆盖。宿主输出只允许修正一次；仍失败交人工复核，不能换低标准或修改哈希让结果通过。连接错误、格式错误和输出错误均不等于邮件存在风险。
 
-## IMAP
-
-用户明确要求接邮箱时，先让其在本机 `.env` 填写服务器、TLS端口、完整邮箱用户名、客户端专用密码和文件夹。`fetch-imap`仅显式执行，使用只读文件夹和不标记已读的读取方式。输出任务请求后再按主Skill研判；模型不会自动选择邮箱操作。
-
-## 故障与完成标准
-
-|状态|动作|
+|错误/状态|动作|
 |---|---|
-|`runtime_missing/runtime_invalid`|根据仓库INSTALL重新安装定位运行环境，保留.env和数据|
-|`not_configured`|在本机填写所选模式必需的配置，再用新模拟任务验证|
-|`invalid_output`|依据本任务schema/证据编号修正一次；持续失败则明确报告无有效判断|
-|`request_mismatch/request_changed`|重新prepare新任务，完整读取新请求后重新研判|
-|`job_conflict`|get查看已有结果；需要重跑时prepare新任务，保留原记录|
-|`provider_busy` / HTTP429|等待当前任务结束后重试待执行任务，保持并发限制|
-|`progress_timeout`|单封实时任务连续5分钟无终态即失败；查看错误后创建新任务重试|
-|`file_access_denied/filesystem_error`|报告宿主文件权限或写入错误，保留沙箱与审批配置，交由用户或项目修复|
-|服务/进程中断留下running|get显示未完成，不能据此判断安全；保留旧任务并prepare新任务|
+|needs_input|向用户展示安装模式、IMAP或提供方问题，取得选择再执行|
+|installation_error|核对完整Skill、Python3.12+和工作区；保留配置，按原选择重新setup|
+|imap_not_configured|让用户在指定.env补全返回的字段名|
+|imap_tls_failed|检查服务器、TLS端口与证书，保持证书验证|
+|imap_auth_failed|用户在本机检查完整用户名与客户端专用密码|
+|imap_folder_failed|确认文件夹名称及权限，再check-imap|
+|imap_connection_failed|检查服务器、TLS端口和网络|
+|invalid_output|按本任务schema与证据编号修正一次；失败继续保留无有效判断状态|
+|request_mismatch/request_changed|重新prepare并读取新请求后研判|
+|job_conflict|get查看旧结果；重跑另建任务|
+|provider_busy|稍后重试原prepared任务|
+|progress_timeout|保留失败记录，需要重试时另建任务|
+|file_access_denied/filesystem_error|报告宿主权限或本机存储问题，保持沙箱与审批配置|
+|service_not_installed|按用户意图安装service模式|
+|runtime_unavailable/bootstrap_unavailable|使用Python3.12+或重装完整Skill；保留工作区.mailguard，不改宿主沙箱|
+|dependency_install_failed/installation_timeout|检查网络与包源，恢复后重跑原setup/install命令|
+|operation_cancelled|当前步骤停止，先doctor/get确认状态，按用户意图继续未完成步骤|
 
-安装完成：离线doctor通过、WorkBuddy发现Skill、实际模拟邮件经过prepare→当前宿主新研判→submit校验→证据展示。前三者以外的真实API、真实IMAP、Windows运行分别保留独立验证状态。人工复核通过review追加；原始结论不覆盖。AI反馈不写成human_review。
-
-宿主限制文件或命令访问时保持其权限机制；不要移除宿主注入的PYTHONPATH、禁用沙箱shim或降低审批要求来通过自检。保留具体错误与任务状态，先修复项目兼容性再重试。
+服务中断留下running时报告未完成；原结果和失败记录均不覆盖。校验失败、格式错误及检查范围缺口不冒充有效安全结论。

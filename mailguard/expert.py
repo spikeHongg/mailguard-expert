@@ -13,14 +13,14 @@ from uuid import uuid4
 
 from .config import ROOT, configuration_status, progress_timeout_seconds
 from .contracts import canonical, decode_response, digest, guided_request, response_report_status
-from .engine import api_assess
 from .models import AnalysisError
 from .parser import parse_mail
 from .progress import ProgressDeadline
 from .skills import skill_trace
+from .failures import recovery
 
 PROFILES = ('v6-c1', 'v6')
-SAMPLES = ('m002', 'm026')
+SAMPLES = ('m002', 'm026', 'm031')
 MAX_MAIL_BYTES = 5 * 1024 * 1024
 
 
@@ -170,9 +170,15 @@ class Expert:
                     raise AnalysisError('任务已运行或已有结果；重新研判请准备新任务。', code='job_conflict')
         return self.get(job_id)
 
-    def analyze(self, job_id, provider, *, assessor=api_assess, idle_seconds=None):
+    def analyze(self, job_id, provider, *, assessor=None, idle_seconds=None):
         if provider not in ('deepseek', 'glm', 'gpt'):
             raise AnalysisError('请选择已支持的实时模型。', code='invalid_provider')
+        if assessor is None:
+            try:
+                from .engine import api_assess
+            except ImportError:
+                raise AnalysisError('实时API需要独立服务模式，请按安装SOP添加服务。', code='service_not_installed') from None
+            assessor = api_assess
         job = self.get(job_id, include_request=True)
         seconds = progress_timeout_seconds() if idle_seconds is None else idle_seconds
         with self.connect() as db:
@@ -202,12 +208,19 @@ class Expert:
             result = {'status': 'error', 'source': 'live_api_attempt', 'provider': provider,
                       'error': str(exc), 'error_code': exc.code, 'attempts': exc.attempts,
                       'decision_status': 'unvalidated', 'evidence_status': 'unverified', 'report_status': 'failed'}
+        except KeyboardInterrupt:
+            cancel.set()
+            result = {'status': 'error', 'source': 'live_api_attempt', 'provider': provider,
+                      'error': '用户已中止本次研判，未产生有效结果。', 'error_code': 'operation_cancelled',
+                      'decision_status': 'unvalidated', 'evidence_status': 'unverified', 'report_status': 'failed'}
         except Exception:
             result = {'status': 'error', 'source': 'live_api_attempt', 'provider': provider,
                       'error': '研判内部错误，未产生有效结果。', 'error_code': 'internal_error'}
         finally:
             finished.set()
             watcher.join(timeout=1)
+        if result['status'] == 'error':
+            result['recovery'] = recovery(result['error_code'])
         result.update(request_hash=job['request_hash'], recorded_at=now(), elapsed_seconds=round(time.perf_counter()-started, 4))
         with self.connect() as db:
             db.execute('UPDATE jobs SET status=?,result=? WHERE id=? AND status=\'running\'',
@@ -233,6 +246,7 @@ class Expert:
                 'errors': batch['errors'], 'source': 'imap_readonly', 'sent_to_model': False}
 
     def doctor(self):
+        from .imap_source import configuration_status as imap_status
         request = guided_request(parse_mail(asset('sample', 'm026').read_bytes(), 'doctor', inspect_html=True),
                                  {}, asset('guidance', 'v6-c1').read_text(encoding='utf-8'), 'v6')
         fixture = {'verdict': 'clear', 'risk_types': [], 'skill_checks': [
@@ -246,5 +260,6 @@ class Expert:
         return {'status': 'ok', 'mode': 'offline_contract_selftest', 'skills': len(request['skills']),
                 'html_static': True, 'samples': list(SAMPLES), 'contract_roundtrip': True,
                 'state_writable': self.db.is_file(), 'providers_configured': configuration_status(),
+                'imap_configuration': imap_status(),
                 'api_verified': False, 'imap_verified': False,
                 'note': '固定结构夹具通过解析与校验；不是AI研判或真实连通性测试。'}

@@ -22,7 +22,8 @@ def test_distribution_excludes_internal_records_and_machine_state():
     assert {n for n in names if n.startswith('docs/')} == {'docs/local-api.md'}
     assert '.env' not in names and not any(n.endswith('runtime.json') for n in names)
     assert not {'scripts/report_html_eval.py', 'scripts/compare_restored_run.py'} & names
-    assert len([n for n in names if n.endswith('.eml')]) == 100
+    assert len([n for n in names if n.startswith('data/testbench/') and n.endswith('.eml')]) == 100
+    assert len([n for n in names if '/_assets/samples/' in n]) == 3
 
 
 def test_distribution_refuses_known_secret_in_allowlisted_file(tmp_path, monkeypatch):

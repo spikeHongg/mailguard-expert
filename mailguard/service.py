@@ -5,21 +5,25 @@ import hmac
 import os
 from pathlib import Path
 import secrets
+import sqlite3
 from threading import BoundedSemaphore
 from typing import Literal
 
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, ConfigDict, Field
 
 from .config import provider_concurrency
 from .expert import Expert, MAX_MAIL_BYTES
 from .models import AnalysisError
+from . import __version__
+from .failures import failure
 
 
 class PrepareInput(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    sample: Literal['m002', 'm026'] | None = None
+    sample: Literal['m002', 'm026', 'm031'] | None = None
     eml_base64: str | None = Field(default=None, max_length=7*1024*1024)
     context: dict = Field(default_factory=dict)
     profile: Literal['v6-c1', 'v6'] = 'v6-c1'
@@ -74,7 +78,7 @@ def create_app(*, expert=None, token=None, assessor=None, limits=None):
         raise AnalysisError('服务并发数须为1至20。', code='invalid_config')
     slots = {p: BoundedSemaphore(v) for p, v in limits.items()}
 
-    app = FastAPI(title='MailGuard Expert', version='0.1.0', docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title='MailGuard Expert', version=__version__, docs_url=None, redoc_url=None, openapi_url=None)
     app.state.expert = expert
 
     async def authenticate(authorization: str | None = Header(default=None)):
@@ -89,7 +93,7 @@ def create_app(*, expert=None, token=None, assessor=None, limits=None):
         async for chunk in request.stream():
             size += len(chunk)
             if size > 8*1024*1024:
-                return JSONResponse({'status': 'error', 'error_code': 'request_too_large'}, status_code=413)
+                return JSONResponse(failure('request_too_large', '请求超过大小限制。'), status_code=413)
             chunks.append(chunk)
         request._body = b''.join(chunks)
         return await call_next(request)
@@ -98,11 +102,21 @@ def create_app(*, expert=None, token=None, assessor=None, limits=None):
     async def known_error(request, exc):
         status = {'unauthorized': 401, 'job_not_found': 404, 'job_conflict': 409,
                   'provider_busy': 429}.get(exc.code, 400)
-        return JSONResponse({'status': 'error', 'error_code': exc.code, 'error': str(exc)}, status_code=status)
+        return JSONResponse(failure(exc.code, str(exc)), status_code=status)
+
+    @app.exception_handler(RequestValidationError)
+    async def invalid_input(request, exc):
+        return JSONResponse(failure('input_error', '请求字段或类型不符合接口要求，请核对/v1/openapi.json。'), status_code=422)
+
+    @app.exception_handler(OSError)
+    @app.exception_handler(sqlite3.Error)
+    async def storage_error(request, exc):
+        code = 'file_access_denied' if isinstance(exc, PermissionError) else 'filesystem_error'
+        return JSONResponse(failure(code, '本机存储操作失败，未取得新的有效研判。'), status_code=500)
 
     @app.get('/health')
     def health():
-        return {'status': 'ok', 'service': 'mailguard-expert', 'version': '0.1.0'}
+        return {'status': 'ok', 'service': 'mailguard-expert', 'version': __version__}
 
     @app.get('/v1/capabilities', dependencies=[Depends(authenticate)])
     def capabilities():

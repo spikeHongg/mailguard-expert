@@ -82,6 +82,45 @@ def test_directory_lock_blocks_duplicate_run_and_releases(tmp_path):
     with EvaluationRun(jobs(),folder=tmp_path):pass
 
 
+def test_windows_lock_uses_same_byte_and_maps_contention(monkeypatch, tmp_path):
+    import errno
+    import sys
+    from types import SimpleNamespace
+    calls = []
+    def locking(fd, mode, size):
+        calls.append((mode, size))
+    fake = SimpleNamespace(LK_NBLCK=2, LK_UNLCK=0, locking=locking)
+    monkeypatch.setitem(sys.modules, 'msvcrt', fake)
+    with (tmp_path/'lock').open('a+b') as stream:
+        stream.write(b'fixture');stream.flush()
+        with monkeypatch.context() as platform:
+            platform.setattr(sys, 'platform', 'win32')
+            lifecycle._run_lock(stream)
+            assert stream.tell() == 0
+            lifecycle._run_lock(stream, release=True)
+            assert calls == [(2, 1), (0, 1)]
+            def occupied(*args):
+                raise OSError(errno.EACCES, 'occupied')
+            fake.locking = occupied
+            with pytest.raises(BlockingIOError):
+                lifecycle._run_lock(stream)
+
+
+def test_failed_acquisition_never_unlocks_another_run(monkeypatch, tmp_path):
+    released = []
+    def occupied(stream, *, release=False):
+        if release:
+            released.append(True)
+        else:
+            raise BlockingIOError('occupied')
+    monkeypatch.setattr(lifecycle, '_run_lock', occupied)
+    run = EvaluationRun(jobs(), folder=tmp_path)
+    with pytest.raises(AnalysisError) as exc:
+        with run: pass
+    assert exc.value.code == 'run_busy'
+    assert not released and run._lock is None
+
+
 def test_twenty_tasks_overlap_and_preserve_input_order():
     barrier=Barrier(20);meter=InFlightMeter()
     def worker(job,cancel):

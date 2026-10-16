@@ -147,6 +147,7 @@ def test_corrupt_replay_is_safe_error(tmp_path):
         analyze(mail, {}, replay_dir=tmp_path)
 
 def test_imap_readonly(monkeypatch):
+    monkeypatch.setenv('IMAP_HOST','imap.example.test')
     for key in ('IMAP_USERNAME','IMAP_PASSWORD','IMAP_FOLDER'):
         monkeypatch.setenv(key,'test')
     box = MagicMock()

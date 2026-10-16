@@ -5,7 +5,7 @@ from pathlib import Path
 from .config import ROOT
 from .models import AnalysisError
 
-SKILLS_DIR = ROOT / 'skills' if (ROOT / 'skills').is_dir() else Path(__file__).parent / '_assets/skills'
+SKILLS_DIR = ROOT / 'policies/detection' if (ROOT / 'policies/detection').is_dir() else Path(__file__).parent / '_assets/skills'
 REGISTRY = [
     ('mail-triage-core', '证据初筛', None),
     ('mail-identity-access', '身份与授权', r'密码|验证码|验证|恢复码|令牌|会话|登录|授权|绑定|MFA|token|cookie|oauth|device|同意'),

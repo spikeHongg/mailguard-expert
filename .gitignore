@@ -40,6 +40,9 @@ service.token
 *.sqlite3-*
 *.eml
 !data/testbench/m[0-9][0-9][0-9].eml
+!skills/mailguard-expert/scripts/_runtime/mailguard/_assets/samples/m002.eml
+!skills/mailguard-expert/scripts/_runtime/mailguard/_assets/samples/m026.eml
+!skills/mailguard-expert/scripts/_runtime/mailguard/_assets/samples/m031.eml
 *.emlx
 *.msg
 *.pst

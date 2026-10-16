@@ -1,36 +1,20 @@
 #!/usr/bin/env python3
-"""Portable Skill launcher; runtime-specific paths stay in ignored runtime.json."""
-import json
+"""Canonical launcher copied into the self-contained Skill at build time."""
 from pathlib import Path
-import subprocess
+import json
 import sys
 
-
-def main():
-    skill = Path(__file__).resolve().parent.parent
-    path = skill/'runtime.json'
-    if not path.is_file():
-        # Agents may explicitly read the repository's canonical Skill after install.
-        root = skill.parent.parent
-        installed = root/'.codebuddy/skills/mailguard-expert/runtime.json'
-        if (root/'scripts/install.py').is_file() and (root/'pyproject.toml').is_file() and installed.is_file():
-            path = installed
-    if not path.is_file():
-        print(json.dumps({'status': 'error', 'error_code': 'runtime_missing',
-                          'error': '请按references/operations.md从仓库执行安装器；仅复制Skill尚未安装Python后端。'}, ensure_ascii=False))
-        return 1
-    try:
-        config = json.loads(path.read_text(encoding='utf-8'))
-        if not Path(config['python']).is_file() or not Path(config['source']).is_dir():
-            raise ValueError()
-        command = [config['python'], '-m', 'mailguard.expert_cli', '--state-dir', config['state_dir'],
-                   '--env-file', config['env_file'], *sys.argv[1:]]
-        return subprocess.run(command, cwd=config['source']).returncode
-    except (OSError, KeyError, ValueError):
-        print(json.dumps({'status': 'error', 'error_code': 'runtime_invalid',
-                          'error': '本机运行环境定位失效，请保留.env和私有数据并重新运行仓库安装器。'}, ensure_ascii=False))
-        return 1
-
+sys.dont_write_bytecode = True
+SKILL = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(SKILL/'scripts/_runtime'))
+try:
+    from mailguard.bootstrap import skill_main
+except (ImportError, SyntaxError):
+    print(json.dumps({'status': 'error', 'error_code': 'bootstrap_unavailable',
+                      'error': 'Skill引导程序不完整或Python版本不支持。',
+                      'recovery': {'automatic_retry': False, 'next_steps': [
+                          '确认使用Python3.12+；重新安装完整Skill，保留工作区.mailguard中的配置和记录。']}}, ensure_ascii=False))
+    raise SystemExit(1) from None
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(skill_main(SKILL))

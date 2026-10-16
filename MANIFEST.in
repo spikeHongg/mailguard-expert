@@ -1,13 +1,23 @@
 include pyproject.toml setup.py
 include policies/expert-guidance.txt
-include data/testbench/m002.eml data/testbench/m026.eml
+recursive-include policies/detection SKILL.md
+include data/testbench/m002.eml data/testbench/m026.eml data/testbench/m031.eml
+include data/testbench/m[0-9][0-9][0-9].eml
+include data/testbench/context.json data/testbench/context-v2.json data/testbench/labels.json
+include data/testbench/manifest.json data/testbench/metadata-v2.json data/testbench/versions/v1.json
+recursive-include tests *.py *.json
 recursive-include skills SKILL.md
 include skills/mailguard-expert/.gitignore
 recursive-include skills/mailguard-expert/scripts *.py
 recursive-include skills/mailguard-expert/references *.md
-include scripts/install.py scripts/export_distribution.py
+include skills/mailguard-expert/bundle-manifest.json
+recursive-include skills/mailguard-expert/scripts/_runtime *.txt *.eml
+include scripts/install.py scripts/export_distribution.py scripts/build_skill_bundle.py scripts/skill_entry.py
+include scripts/audit_public_overlap.py scripts/build_testbench.py scripts/expand_testbench.py
+include scripts/prepare_form_controls.py scripts/prepare_html_corpus.py scripts/prepare_html_holdout.py scripts/restore_public_corpus.py
+include app.py 启动邮件研判.command
 include README.md AGENTS.md INSTALL.md PUBLISH.md CONTEXT.md GLOSSARY.md
-include .env.example .gitignore requirements.txt requirements.lock.txt
+include .env.example .gitignore requirements.txt requirements.lock.txt requirements-core.txt
 include .gitattributes .streamlit/config.toml
 include docs/local-api.md
 exclude .env
@@ -15,3 +25,4 @@ prune data/private
 prune .codebuddy
 prune .workbuddy
 prune reports
+prune .mailguard

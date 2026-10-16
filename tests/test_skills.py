@@ -46,7 +46,7 @@ def test_skill_evidence_must_be_real_and_reported():
 
 def test_skill_edit_invalidates_replay(tmp_path, monkeypatch):
     import mailguard.skills as skills
-    shutil.copytree(ROOT/'skills', tmp_path/'skills')
+    shutil.copytree(ROOT/'policies/detection', tmp_path/'skills')
     monkeypatch.setattr(skills, 'SKILLS_DIR', tmp_path/'skills')
     mail=parse_mail(raw_mail())
     before=request_for(mail, {}, 'v3')

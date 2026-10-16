@@ -1,2 +1,5 @@
-runtime.json
 __pycache__/
+*.pyc
+runtime.json
+.venv/
+.env
