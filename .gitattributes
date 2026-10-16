@@ -1,0 +1,2 @@
+# Preserve original EML bytes and CRLF so frozen dataset hashes stay valid.
+*.eml -text whitespace=cr-at-eol

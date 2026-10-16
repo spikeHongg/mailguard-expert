@@ -1,0 +1,17 @@
+include pyproject.toml setup.py
+include policies/expert-guidance.txt
+include data/testbench/m002.eml data/testbench/m026.eml
+recursive-include skills SKILL.md
+include skills/mailguard-expert/.gitignore
+recursive-include skills/mailguard-expert/scripts *.py
+recursive-include skills/mailguard-expert/references *.md
+include scripts/install.py scripts/export_distribution.py
+include README.md AGENTS.md INSTALL.md PUBLISH.md CONTEXT.md GLOSSARY.md
+include .env.example .gitignore requirements.txt requirements.lock.txt
+include .gitattributes .streamlit/config.toml
+include docs/local-api.md
+exclude .env
+prune data/private
+prune .codebuddy
+prune .workbuddy
+prune reports

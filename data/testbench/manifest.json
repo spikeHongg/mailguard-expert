@@ -1,0 +1,552 @@
+[
+  {
+    "id": "m001",
+    "filename": "m001.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m002",
+    "filename": "m002.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m003",
+    "filename": "m003.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m004",
+    "filename": "m004.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m005",
+    "filename": "m005.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m006",
+    "filename": "m006.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m007",
+    "filename": "m007.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m008",
+    "filename": "m008.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m009",
+    "filename": "m009.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m010",
+    "filename": "m010.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m011",
+    "filename": "m011.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m012",
+    "filename": "m012.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m013",
+    "filename": "m013.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m014",
+    "filename": "m014.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m015",
+    "filename": "m015.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m016",
+    "filename": "m016.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m017",
+    "filename": "m017.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m018",
+    "filename": "m018.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m019",
+    "filename": "m019.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m020",
+    "filename": "m020.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m021",
+    "filename": "m021.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m022",
+    "filename": "m022.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m023",
+    "filename": "m023.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m024",
+    "filename": "m024.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m025",
+    "filename": "m025.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m026",
+    "filename": "m026.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m027",
+    "filename": "m027.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m028",
+    "filename": "m028.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m029",
+    "filename": "m029.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m030",
+    "filename": "m030.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m031",
+    "filename": "m031.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m032",
+    "filename": "m032.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m033",
+    "filename": "m033.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m034",
+    "filename": "m034.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m035",
+    "filename": "m035.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m036",
+    "filename": "m036.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m037",
+    "filename": "m037.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m038",
+    "filename": "m038.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m039",
+    "filename": "m039.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m040",
+    "filename": "m040.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m041",
+    "filename": "m041.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m042",
+    "filename": "m042.eml",
+    "split": "holdout"
+  },
+  {
+    "id": "m043",
+    "filename": "m043.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m044",
+    "filename": "m044.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m045",
+    "filename": "m045.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m046",
+    "filename": "m046.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m047",
+    "filename": "m047.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m048",
+    "filename": "m048.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m049",
+    "filename": "m049.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m050",
+    "filename": "m050.eml",
+    "split": "dev"
+  },
+  {
+    "id": "m051",
+    "filename": "m051.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m052",
+    "filename": "m052.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m053",
+    "filename": "m053.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m054",
+    "filename": "m054.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m055",
+    "filename": "m055.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m056",
+    "filename": "m056.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m057",
+    "filename": "m057.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m058",
+    "filename": "m058.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m059",
+    "filename": "m059.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m060",
+    "filename": "m060.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m061",
+    "filename": "m061.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m062",
+    "filename": "m062.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m063",
+    "filename": "m063.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m064",
+    "filename": "m064.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m065",
+    "filename": "m065.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m066",
+    "filename": "m066.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m067",
+    "filename": "m067.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m068",
+    "filename": "m068.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m069",
+    "filename": "m069.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m070",
+    "filename": "m070.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m071",
+    "filename": "m071.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m072",
+    "filename": "m072.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m073",
+    "filename": "m073.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m074",
+    "filename": "m074.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m075",
+    "filename": "m075.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m076",
+    "filename": "m076.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m077",
+    "filename": "m077.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m078",
+    "filename": "m078.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m079",
+    "filename": "m079.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m080",
+    "filename": "m080.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m081",
+    "filename": "m081.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m082",
+    "filename": "m082.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m083",
+    "filename": "m083.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m084",
+    "filename": "m084.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m085",
+    "filename": "m085.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m086",
+    "filename": "m086.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m087",
+    "filename": "m087.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m088",
+    "filename": "m088.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m089",
+    "filename": "m089.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m090",
+    "filename": "m090.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m091",
+    "filename": "m091.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m092",
+    "filename": "m092.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m093",
+    "filename": "m093.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m094",
+    "filename": "m094.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m095",
+    "filename": "m095.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m096",
+    "filename": "m096.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m097",
+    "filename": "m097.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m098",
+    "filename": "m098.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m099",
+    "filename": "m099.eml",
+    "split": "holdout",
+    "context_file": "context-v2.json"
+  },
+  {
+    "id": "m100",
+    "filename": "m100.eml",
+    "split": "dev",
+    "context_file": "context-v2.json"
+  }
+]
