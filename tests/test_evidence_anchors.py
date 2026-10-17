@@ -72,6 +72,7 @@ def test_imap_parse_error_isolated_from_other_messages(monkeypatch):
     from tests.test_core import raw_mail
     for key in ('IMAP_USERNAME','IMAP_PASSWORD','IMAP_FOLDER'):
         monkeypatch.setenv(key,'unit-test-placeholder')
+    monkeypatch.setenv('IMAP_HOST', 'imap.example.test')
     box=MagicMock()
     bad=SimpleNamespace(uid='1',obj=SimpleNamespace(as_bytes=lambda:b''))
     good=SimpleNamespace(uid='2',obj=SimpleNamespace(as_bytes=raw_mail))

@@ -100,6 +100,7 @@ def test_imap_static_check_preserves_read_only_not_seen(monkeypatch):
     from types import SimpleNamespace
     from mailguard.imap_source import fetch_test_folder_batch
     for key in ('IMAP_USERNAME','IMAP_PASSWORD','IMAP_FOLDER'):monkeypatch.setenv(key,'test-placeholder')
+    monkeypatch.setenv('IMAP_HOST', 'imap.example.test')
     box=MagicMock()
     box.fetch.return_value=[SimpleNamespace(uid='1',obj=SimpleNamespace(as_bytes=lambda:message('<input name="otp">')))]
     result=fetch_test_folder_batch(mailbox_factory=MagicMock(return_value=box),inspect_html=True)
