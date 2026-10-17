@@ -38,7 +38,7 @@ def build(root=ROOT, check=False):
             target.write_bytes(source.read_bytes())
     expected = {name: hashlib.sha256(path.read_bytes()).hexdigest() for name, path in sources.items()}
     expected.update({name: hashlib.sha256((skill/name).read_bytes()).hexdigest() for name in STATIC})
-    manifest = {'format': 'mailguard-skill-bundle-v1', 'version': '0.2.0', 'files': dict(sorted(expected.items()))}
+    manifest = {'format': 'mailguard-skill-bundle-v1', 'version': '1.0.0', 'files': dict(sorted(expected.items()))}
     path = skill/'bundle-manifest.json'
     if not check:
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')

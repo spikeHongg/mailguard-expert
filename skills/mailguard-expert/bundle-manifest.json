@@ -1,12 +1,12 @@
 {
   "format": "mailguard-skill-bundle-v1",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "files": {
     ".gitignore": "78a65ec5c191e1733fb84539dd52c7d197a64d3f3714de538c8c650a05796fc3",
-    "SKILL.md": "a2da1cb5ff2ef2ba38b4f41da22139b7c03656c557ef8583ede5a89d241c0110",
+    "SKILL.md": "bae997d15f1abc62990b9feced6f7b1c98b40c81fe993572b5f19460382837ff",
     "references/installation.md": "a397a16df344ea31e4c568de7c3e1a993c1a2821977f6e428010a7a4a037af7e",
     "references/operations.md": "3a66a38fb76139bcd63399eb754e2388a1cd3e82d1cbc78310d5d9b34b77f13b",
-    "scripts/_runtime/mailguard/__init__.py": "6e983bd3144342bc993a204decd4c96d54d4a58ec9aa8c4eec60f7cbe6162d33",
+    "scripts/_runtime/mailguard/__init__.py": "21dd9c3bbed2e6f98f1d8fc65ee43fa62409cd7977c24572e138042e125e8121",
     "scripts/_runtime/mailguard/_assets/guidance.txt": "d66e2f3d3b58c80689e7477b7e8255c0fea9be0daead101025d15c3b6648686f",
     "scripts/_runtime/mailguard/_assets/samples/m002.eml": "765d7ef2aa3daa51729694d0ad0ccfa72327a5c63554e13f5d94c88efd075b0b",
     "scripts/_runtime/mailguard/_assets/samples/m026.eml": "a69de9222ccafb933f8c834a221afa86d917e4e8f3d06703f0d503a6c59f44c6",

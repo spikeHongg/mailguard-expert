@@ -3,7 +3,7 @@ name: mailguard-expert
 description: 邮件安全专家。安装时选择Skill或独立服务并初始化IMAP；使用时检查.eml、模拟邮件和明确授权的只读邮箱，执行9项风险检查、原文证据校验与复核。
 compatibility: Python 3.12+；首次准备轻量依赖需要网络。WorkBuddy使用.codebuddy/skills目录。
 metadata:
-  version: "0.2.0"
+  version: "1.0.0"
 ---
 
 # MailGuard邮件安全专家
