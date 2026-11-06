@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="372" viewBox="0 0 960 372" role="img" aria-labelledby="title desc">
+<title id="title">MailGuard · 清邮：结构预览</title><desc id="desc">邮件安全研判：结论、原文证据与人工复核；.eml 文件 · 内置模拟邮件 · 明确触发的只读 IMAP</desc>
+<rect width="960" height="372" rx="20" fill="#f6f8fa"/>
+<rect x="24" y="28" width="4" height="58" rx="2" fill="#0969da"/>
+<g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Arial,PingFang SC,Microsoft YaHei,sans-serif">
+<text x="44" y="52" font-size="24" font-weight="700" fill="#1f2328">MailGuard · 清邮</text>
+<text x="44" y="80" font-size="15" fill="#59636e">邮件安全研判：结论、原文证据与人工复核</text>
+<rect x="28" y="112" width="292" height="164" rx="12" fill="#ffffff" stroke="#d1d9e0"/>
+<text x="48" y="144" font-size="13" font-weight="600" fill="#0969da">01</text>
+<text x="48" y="174" font-size="20" font-weight="600" fill="#1f2328">风险结论</text>
+<text x="48" y="205" font-size="15" fill="#59636e">risk / clear / review / error</text>
+<text x="48" y="230" font-size="15" fill="#59636e">区分风险、信息不足与执行失败</text>
+<rect x="334" y="112" width="292" height="164" rx="12" fill="#ffffff" stroke="#d1d9e0"/>
+<text x="354" y="144" font-size="13" font-weight="600" fill="#0969da">02</text>
+<text x="354" y="174" font-size="20" font-weight="600" fill="#1f2328">原文证据</text>
+<text x="354" y="205" font-size="15" fill="#59636e">引用邮件片段，绑定本次请求</text>
+<text x="354" y="230" font-size="15" fill="#59636e">证据校验通过后展示结果</text>
+<rect x="640" y="112" width="292" height="164" rx="12" fill="#ffffff" stroke="#d1d9e0"/>
+<text x="660" y="144" font-size="13" font-weight="600" fill="#0969da">03</text>
+<text x="660" y="174" font-size="20" font-weight="600" fill="#1f2328">人工复核</text>
+<text x="660" y="205" font-size="15" fill="#59636e">提供复核建议与记录入口</text>
+<text x="660" y="230" font-size="15" fill="#59636e">邮箱只读，不自动回信或删除</text>
+<text x="28" y="310" font-size="14" fill="#59636e">.eml 文件 · 内置模拟邮件 · 明确触发的只读 IMAP</text>
+<text x="28" y="340" font-size="12" fill="#59636e">结构示意 · 非实测截图</text></g></svg>

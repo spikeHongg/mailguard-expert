@@ -2,7 +2,11 @@
 
 邮件安全专家，识别凭据钓鱼、付款诈骗、危险附件诱导、资料套取和提示注入，提供可核验的原文证据与复核建议。
 
-[安装说明](INSTALL.md) · [专家Skill](skills/mailguard-expert/SKILL.md) · [HTTP API](docs/local-api.md)
+[安装说明](INSTALL.md) · [调用示例](docs/local-api.md#可直接运行的调用示例) · [Releases](https://github.com/spikeHongg/mailguard-expert/releases)
+
+![MailGuard 结果结构：风险结论、原文证据与人工复核；结构示意，非实测截图](docs/preview.svg)
+
+使用内置模拟邮件体验完整流程，见 [API 调用示例](docs/local-api.md#可直接运行的调用示例)；在 Agent 中使用，见 [专家 Skill](skills/mailguard-expert/SKILL.md)。
 
 ## 交给WorkBuddy安装
 
